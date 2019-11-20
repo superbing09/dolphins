@@ -21,18 +21,15 @@ import java.util.Map;
 @Service
 public class WechatApi {
 
-    /*private static final String appId = "wx5743efca81aa7259";
+    private static final String appId = "wx5743efca81aa7259";
 
     private static final String secret = "da1d0853928f56d2fb3b0a227e3b2ee5";
-    */
+
+/*
     private static final String appId = "wx09e5e9551b287edc";
 
     private static final String secret = "13a968dcd5feb1bc70ab880c55e58e2a";
-
-    private static final String token = "superbing";
-
-    private static final String encodingAESKey = "UVNIzvny8kgExw1OJ7VtPiSlpcCxxBpLzzvziKI0ydI";
-
+*/
 
     @Autowired
     private RestTemplate restTemplate;

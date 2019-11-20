@@ -37,17 +37,12 @@ public class HttpController {
 
     private static Logger logger = LoggerFactory.getLogger(HttpController.class);
 
-    //private static final String appId = "wx5743efca81aa7259";
-/*
+    private static final String appId = "wx5743efca81aa7259";
+
 
     private static final String encodingAESKey = "UVNIzvny8kgExw1OJ7VtPiSlpcCxxBpLzzvziKI0ydI";
 
-    private static final String appId = "wx09e5e9551b287edc";
-*/
-
-    private static final String encodingAESKey = "sceret1111111111111111111111111111111111111";
-
-    private static final String token = "yqxiu.marketing.token610";
+    private static final String token = "superbing";
 
     @Autowired
     private RestTemplate restTemplate;
@@ -67,7 +62,7 @@ public class HttpController {
     @RequestMapping("wechat/get")
     @ResponseBody
     public String getAccessToken() {
-        String json = restTemplate.getForObject("https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=wx5743efca81aa7259&secret=da1d0853928f56d2fb3b0a227e3b2ee5", String.class);
+        String json = restTemplate.getForObject("https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid="+ appId +"&secret=" + encodingAESKey, String.class);
         return json;
     }
 
@@ -77,25 +72,6 @@ public class HttpController {
         return wechatApi.getMaterial();
     }
 
-    @RequestMapping("/auth/wechat/ad/message/{appid}/callback")
-    @ResponseBody
-    public String wechatTest(@PathVariable("appid") String appId, HttpServletRequest request) throws Exception {
-        System.out.println("appid:" + appId);
-        String timestamp = request.getParameter("timestamp");
-        String nonce = request.getParameter("nonce");
-        String msg_signature = request.getParameter("msg_signature");
-        String body = RequestUtil.readRequestBody(request);
-
-        // 测试环境明文
-        WXBizMsgCrypt crypt = new WXBizMsgCrypt(token, encodingAESKey, "wx38e2b0ef6e85147b");
-        String rec = crypt.decryptMsg(msg_signature, timestamp, nonce, body);
-        Map<String, String> map = XMLParse.parseXML(rec);
-
-        map.forEach((k, v) -> System.out.println("k:" + k + " v:" + v));
-
-        String returnMsg = XMLParse.reSendMsg(map.get("FromUserName"), map.get("ToUserName"), "测试");
-        return crypt.encryptMsg(returnMsg, timestamp, nonce);
-    }
 
     @RequestMapping("wechat/msg")
     @ResponseBody
@@ -105,23 +81,17 @@ public class HttpController {
         return echostr;*/
         String timestamp = request.getParameter("timestamp");
         String nonce = request.getParameter("nonce");
-        String signature = request.getParameter("signature");
-        String result = SHA1.getSHA1(token, timestamp, nonce, "");
-        if(!signature.equals(result)) {
-            return "success";
-        }
-
+        String signature = request.getParameter("msg_signature");
+        String body = RequestUtil.readRequestBody(request);
         // 测试环境明文
-        WXBizMsgCrypt crypt = new WXBizMsgCrypt(token, encodingAESKey, "");
-        String rec = crypt.decryptMsg(signature, timestamp, nonce, RequestUtil.readRequestBody(request));
-        //String rec = RequestUtil.readRequestBody(request);
+        WXBizMsgCrypt crypt = new WXBizMsgCrypt(token, encodingAESKey, appId);
+        String rec = crypt.decryptMsg(signature, timestamp, nonce, body);
         Map<String, String> map = XMLParse.parseXML(rec);
 
         map.forEach((k, v) -> System.out.println("k:" + k + " v:" + v));
 
         String returnMsg = dealMsgType(map);
-        //return crypt.encryptMsg(returnMsg, timestamp, nonce);
-        return returnMsg;
+        return crypt.encryptMsg(returnMsg, timestamp, nonce);
     }
 
     private String dealMsgType(Map<String, String> map) {
