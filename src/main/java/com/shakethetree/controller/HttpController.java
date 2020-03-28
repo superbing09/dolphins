@@ -68,8 +68,7 @@ public class HttpController {
     }
 
 
-    //@RequestMapping("wechat/msg")
-    @RequestMapping("/auth/wechat/ad/message/wx5743efca81aa7259/callback")
+    @RequestMapping("wechat/msg")
     @ResponseBody
     public String wechatMsg(HttpServletRequest request) throws Exception {
         /* 接口验证 用
@@ -83,9 +82,6 @@ public class HttpController {
         WXBizMsgCrypt crypt = new WXBizMsgCrypt(token, encodingAESKey, appId);
         String rec = crypt.decryptMsg(signature, timestamp, nonce, body);
         Map<String, String> map = XMLParse.parseXML(rec);
-
-        map.forEach((k, v) -> System.out.println("k:" + k + " v:" + v));
-
         String returnMsg = dealMsgType(map);
         return crypt.encryptMsg(returnMsg, timestamp, nonce);
     }
@@ -144,7 +140,7 @@ public class HttpController {
     private String doEvent(Map<String, String> map) {
         if("subscribe".equalsIgnoreCase(map.get("Event"))) {
             // 返回的是文章code码
-            //return "XH6L6HpHsTD574zKzciKlq_aSvfRkz5AoZVxosfTREU";
+            return "欢迎来到万川集海阁，给我一个uid[游戏id]，还您所有忍界礼包！";
         }
         if("unsubscribe".equalsIgnoreCase(map.get("Event"))) {
             userMapper.delete(MapUtils.getString(map, "FromUserName"));
