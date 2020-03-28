@@ -92,7 +92,7 @@ public class HttpController {
             case "text":
                 return XMLParse.reSendMsg(map.get("FromUserName"), map.get("ToUserName"), doText(map));
             case "event":
-                return XMLParse.parseImageMsg(map.get("FromUserName"), map.get("ToUserName"),doEvent(map));
+                return XMLParse.reSendMsg(map.get("FromUserName"), map.get("ToUserName"),doEvent(map));
             default:
                 return "success";
         }
@@ -116,7 +116,7 @@ public class HttpController {
         if(MapUtils.getInteger(map,"code", 100) == 100) {
             return "请输入正确忍三账号id【账号id：登录游戏->面板 名称下方的ID】";
         }
-        String welcome = "欢迎%1$s大佬,%2$s,从今天起，您的礼包，万川集海阁为您安排！";
+        String welcome = "欢迎%1$s大佬,%2$s,今天起,您的礼包,万川集海阁为您守护!";
 
         // 用户信息落库
         Map<String, String> data = (Map<String, String>) MapUtils.getMap(map, "data");
