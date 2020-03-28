@@ -3,26 +3,21 @@ package com.shakethetree.controller;
 import com.shakethetree.configuration.dto.User;
 import com.shakethetree.configuration.mapper.UserMapper;
 import com.shakethetree.service.WechatApi;
-import com.shakethetree.util.*;
+import com.shakethetree.util.JsonMapper;
+import com.shakethetree.util.RequestUtil;
+import com.shakethetree.util.WXBizMsgCrypt;
+import com.shakethetree.util.XMLParse;
 import org.apache.commons.collections4.MapUtils;
-import org.dom4j.Document;
-import org.dom4j.Element;
-import org.dom4j.io.SAXReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.StringReader;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -37,12 +32,12 @@ public class HttpController {
 
     private static Logger logger = LoggerFactory.getLogger(HttpController.class);
 
-    private static final String appId = "wx5743efca81aa7259";
-
-
-    private static final String encodingAESKey = "UVNIzvny8kgExw1OJ7VtPiSlpcCxxBpLzzvziKI0ydI";
-
-    private static final String token = "superbing";
+    @Value("${wechat.wanchuanjihai.appId}")
+    private String appId;
+    @Value("${wechat.wanchuanjihai.encodingAESKey}")
+    private String encodingAESKey;
+    @Value("${wechat.wanchuanjihai.token}")
+    private String token;
 
     @Autowired
     private RestTemplate restTemplate;
@@ -73,7 +68,8 @@ public class HttpController {
     }
 
 
-    @RequestMapping("wechat/msg")
+    //@RequestMapping("wechat/msg")
+    @RequestMapping("/auth/wechat/ad/message/wx5743efca81aa7259/callback")
     @ResponseBody
     public String wechatMsg(HttpServletRequest request) throws Exception {
         /* 接口验证 用
@@ -96,7 +92,6 @@ public class HttpController {
 
     private String dealMsgType(Map<String, String> map) {
         String msgType = map.get("MsgType");
-        System.out.println(msgType);
         switch(msgType) {
             case "text":
                 return XMLParse.reSendMsg(map.get("FromUserName"), map.get("ToUserName"), doText(map));
@@ -125,7 +120,7 @@ public class HttpController {
         if(MapUtils.getInteger(map,"code", 100) == 100) {
             return "请输入正确忍三账号id【账号id：登录游戏->面板 名称下方的ID】";
         }
-        String welcome = "欢迎%1$s大佬,%2$s";
+        String welcome = "欢迎%1$s大佬,%2$s,从今天起，您的礼包，万川集海阁为您安排！";
 
         // 用户信息落库
         Map<String, String> data = (Map<String, String>) MapUtils.getMap(map, "data");
@@ -148,7 +143,8 @@ public class HttpController {
 
     private String doEvent(Map<String, String> map) {
         if("subscribe".equalsIgnoreCase(map.get("Event"))) {
-            return "XH6L6HpHsTD574zKzciKlq_aSvfRkz5AoZVxosfTREU";
+            // 返回的是文章code码
+            //return "XH6L6HpHsTD574zKzciKlq_aSvfRkz5AoZVxosfTREU";
         }
         if("unsubscribe".equalsIgnoreCase(map.get("Event"))) {
             userMapper.delete(MapUtils.getString(map, "FromUserName"));
@@ -156,5 +152,4 @@ public class HttpController {
         }
         return "success";
     }
-
 }
