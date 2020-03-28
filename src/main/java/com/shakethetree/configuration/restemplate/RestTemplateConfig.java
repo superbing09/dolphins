@@ -8,6 +8,9 @@ import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 
+import java.net.InetSocketAddress;
+import java.net.Proxy;
+import java.net.SocketAddress;
 import java.nio.charset.Charset;
 
 /**
@@ -31,9 +34,9 @@ public class RestTemplateConfig {
     @Bean
     public ClientHttpRequestFactory simpleClientHttpRequestFactory() {
         SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
-        //SocketAddress address = new InetSocketAddress("192.168.0.10", 3128);
-        //Proxy proxy = new Proxy(Proxy.Type.HTTP, address);
-        //factory.setProxy(proxy);
+        SocketAddress address = new InetSocketAddress("192.168.0.10", 3128);
+        Proxy proxy = new Proxy(Proxy.Type.HTTP, address);
+        factory.setProxy(proxy);
         factory.setConnectTimeout(15000);
         factory.setReadTimeout(5000);
         return factory;
