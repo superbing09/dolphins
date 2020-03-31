@@ -105,10 +105,10 @@ public class HttpController {
             String[] code = content.split("[, ]");
             return sendGift(code[1]);
         }
-        return checkAndSaveUid(content);
+        return checkAndSaveUid(content, MapUtils.getString(map, "FromUserName"));
     }
 
-    private String checkAndSaveUid(String uid) {
+    private String checkAndSaveUid(String uid, String openId) {
         String url = "http://statistics.pandadastudio.com/player/simpleInfo?uid=%1$s";
         String result = restTemplate.getForObject(String.format(url, uid), String.class);
         Map<String, Object> map = JsonMapper.getInstance().fromJson(result, Map.class);
@@ -123,7 +123,7 @@ public class HttpController {
         User user = new User();
         user.setName(MapUtils.getString(data, "name"));
         user.setUid(Long.valueOf(uid));
-        user.setOpenid(MapUtils.getString(map, "FromUserName"));
+        user.setOpenid(openId);
         userMapper.insert(user);
         return String.format(welcome, data.get("title"), data.get("name"));
     }
